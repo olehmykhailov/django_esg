@@ -1,55 +1,56 @@
 from django.shortcuts import render
-from etl_app.services.etl import ( 
+import pandas as pd
+from etl_app.services.etl import (
     GreenhouseETL,
     EnergyETL,
     MetadataETL,
     DiversityETL,
 )
 
-def upload_greenhouse(request):
-    if request.method == 'POST':
+def handle_upload(request, template_name, etl_class):
+    if request.method == 'POST' and request.FILES.get('csv_file'):
         company = request.POST.get("company")
-        file = request.FILES.get('csv_file')
+        file = request.FILES["csv_file"]
+        confirm = request.POST.get("confirm")
+
+        if confirm:  # підтверджено — запускаємо ETL
+            try:
+                etl = etl_class(company, file)
+                etl.run()
+                return render(request, template_name, {
+                    'success': True,
+                    'message': '✅ Дані успішно завантажено до БД',
+                    'company': company,
+                })
+            except Exception as e:
+                return render(request, template_name, {
+                    'error': str(e),
+                    'company': company,
+                })
+
         try:
-            etl = GreenhouseETL(company, file)
-            etl.run()
-            return render(request, 'upload_greenhouse.html', {'success': True})
+            df = pd.read_csv(file)
+            preview_html = df.head(10).to_html(classes='table table-bordered', index=False)
+            return render(request, template_name, {
+                'preview': preview_html,
+                'company': company,
+                'file': file,
+                'confirm_required': True
+            })
         except Exception as e:
-            return render(request, 'upload_greenhouse.html', {'error': str(e)})
-    return render(request, 'upload_greenhouse.html')
+            return render(request, template_name, {'error': str(e)})
+
+    return render(request, template_name)
+
+
+def upload_greenhouse(request):
+    return handle_upload(request, 'upload_greenhouse.html', GreenhouseETL)
 
 def upload_energy(request):
-    if request.method == 'POST':
-        company = request.POST.get("company")
-        file = request.FILES.get('csv_file')
-        try:
-            etl = EnergyETL(company, file)
-            etl.run()
-            return render(request, 'upload_energy.html', {'success': True})
-        except Exception as e:
-            return render(request, 'upload_energy.html', {'error': str(e)})
-    return render(request, 'upload_energy.html')
+    return handle_upload(request, 'upload_energy.html', EnergyETL)
 
 def upload_metadata(request):
-    if request.method == 'POST':
-        company = request.POST.get("company")
-        file = request.FILES.get('csv_file')
-        try:
-            etl = MetadataETL(company, file)
-            etl.run()
-            return render(request, 'upload_metadata.html', {'success': True})
-        except Exception as e:
-            return render(request, 'upload_metadata.html', {'error': str(e)})
-    return render(request, 'upload_metadata.html')\
-    
+    return handle_upload(request, 'upload_metadata.html', MetadataETL)
+
 def upload_diversity(request):
-    if request.method == 'POST':
-        company = request.POST.get("company")
-        file = request.FILES.get('csv_file')
-        try:
-            etl = DiversityETL(company, file)
-            etl.run()
-            return render(request, 'upload_diversity.html', {'success': True})
-        except Exception as e:
-            return render(request, 'upload_diversity.html', {'error': str(e)})
-    return render(request, 'upload_diversity.html')
+    return handle_upload(request, 'upload_diversity.html', DiversityETL)

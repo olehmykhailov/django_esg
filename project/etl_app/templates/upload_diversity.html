@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Завантажити CSV - Diversity</title>
+    <title>Upload CSV - Diversity</title>
 </head>
 <body>
-    <h2>Завантаження CSV для Diversity</h2>
+    <h2>Upload CSV for Diversity</h2>
 
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}        
-    
-        <label for="company">Компанія:</label>
-        <input type="text" id="company" name="company" required />
-
-        <label for="csv_file">CSV файл:</label>
-        <input type="file" id="csv_file" name="csv_file" accept=".csv" required />
-
-        <button type="submit">Завантажити</button>
+        {% csrf_token %}
+        <input type="text" name="company" value="{{ company|default_if_none:'' }}" required placeholder="Company">
+        <input type="file" name="csv_file" accept=".csv" required>
+        
+        {% if preview %}
+            <h4>Preview:</h4>
+            <div>{{ preview|safe }}</div>
+            <input type="hidden" name="confirm" value="1">
+            <button type="submit">Confirm and Upload</button>
+        {% else %}
+            <button type="submit">Preview</button>
+        {% endif %}
     </form>
 
-
     {% if success %}
-        <p style="color: green;">✅ Файл успішно завантажено!</p>
+        <p style="color: green;">✅ File uploaded successfully!</p>
     {% elif error %}
-        <p style="color: red;">❌ Помилка: {{ error }}</p>
+        <p style="color: red;">❌ Error: {{ error }}</p>
     {% endif %}
 </body>
 </html>

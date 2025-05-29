@@ -1,29 +1,46 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Завантажити CSV - Greenhouse</title>
+    <title>Upload CSV - Greenhouse</title>
 </head>
 <body>
-    <h2>Завантаження CSV для Greenhouse</h2>
+    <h2>📤 Upload CSV</h2>
 
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-     
-        <label for="company">Компанія:</label>
-        <input type="text" id="company" name="company" required />
-
-        <label for="csv_file">CSV файл:</label>
-        <input type="file" id="csv_file" name="csv_file" accept=".csv" required />
-
-        <button type="submit">Завантажити</button>
+    {% csrf_token %}
+    <label>Company:</label>
+    <input type="text" name="company" required>
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit">Upload and Preview</button>
     </form>
 
+    {% if preview %}
+        <h3>🔍 Preview</h3>
+        <div>{{ preview|safe }}</div>
+
+        <!-- Confirmation form -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="company" value="{{ company }}">
+            <input type="hidden" name="confirm" value="1">
+            <input type="file" name="csv_file" style="display: none;" value="{{ file }}">
+            <button type="submit">✅ Upload to DB</button>
+        </form>
+    {% endif %}
 
     {% if success %}
-        <p style="color: green;">✅ Файл успішно завантажено!</p>
+    <p style="color: green;">{{ message }}</p>
+    {% endif %}
+
+    {% if error %}
+    <p style="color: red;">❌ {{ error }}</p>
+    {% endif %}
+
+    {% if success %}
+        <p style="color: green;">✅ File uploaded successfully!</p>
     {% elif error %}
-        <p style="color: red;">❌ Помилка: {{ error }}</p>
+        <p style="color: red;">❌ Error: {{ error }}</p>
     {% endif %}
 </body>
 </html>

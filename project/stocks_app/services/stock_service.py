@@ -55,6 +55,7 @@ def load_stock_data(df: pd.DataFrame, symbol: str):
     """
     from stocks_app.models import StocksData
     for index, row in df.iterrows():
+        print(row)
         StocksData.objects.create(
             ticker=symbol,
             date=row.name.date(),
