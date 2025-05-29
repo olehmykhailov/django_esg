@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <title>Завантажити CSV - Energy</title>
+</head>
+<body>
+    <h2>Завантаження CSV для Energy</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}        
+    
+        <label for="company">Компанія:</label>
+        <input type="text" id="company" name="company" required />
+
+        <label for="csv_file">CSV файл:</label>
+        <input type="file" id="csv_file" name="csv_file" accept=".csv" required />
+
+        <button type="submit">Завантажити</button>
+    </form>
+
+
+    {% if success %}
+        <p style="color: green;">✅ Файл успішно завантажено!</p>
+    {% elif error %}
+        <p style="color: red;">❌ Помилка: {{ error }}</p>
+    {% endif %}
+</body>
+</html>
