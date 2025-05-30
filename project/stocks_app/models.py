@@ -20,3 +20,16 @@ class StocksData(models.Model):
 
 # ticker,company_name,date,o,h,l,c,pc,d,dp
 # AAPL,Apple Inc,2020-05-11,77.025,79.2625,76.81,78.7525,,,
+
+class Predict(models.Model):
+    """
+    Model to store prediction data.
+    """
+    id = models.AutoField(primary_key=True)
+    ticker = models.CharField(max_length=10)
+    close = models.FloatField()  
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('ticker', 'date')  

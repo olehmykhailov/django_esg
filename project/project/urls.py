@@ -24,5 +24,9 @@ urlpatterns = [
     path('upload/metadata/', etl_views.upload_metadata, name='upload_metadata'),
     path('upload/diversity/', etl_views.upload_diversity, name='upload_diversity'),
     path('upload/stocks/', stocks_views.upload_stocks, name='upload_stocks'),
+    
+    # API endpoints
+    path('api/predict/', stocks_views.save_predict, name='save_predict'),
+    path('api/real-data/', stocks_views.get_real_data, name='get_real_data'),
 ]
 
