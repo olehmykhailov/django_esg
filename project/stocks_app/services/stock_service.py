@@ -87,3 +87,4 @@ def run(symbol, start_date_str, end_date_str):
     load_stock_data(df_transformed, symbol)
 
     print(f"✅ Stock data for {symbol} loaded successfully.")
+

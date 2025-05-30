@@ -1,17 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8" />
     <title>Upload Metadata</title>
+    <link rel="stylesheet" href="{% static 'esg_css/upload_common.css' %}">
 </head>
 <body>
     <h2>Upload CSV for Metadata</h2>
-
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="text" name="company" value="{{ company|default_if_none:'' }}" required placeholder="Company">
         <input type="file" name="csv_file" accept=".csv" required>
-        
         {% if preview %}
             <h4>Попередній перегляд:</h4>
             <div>{{ preview|safe }}</div>
@@ -21,12 +21,10 @@
             <button type="submit">Preview</button>
         {% endif %}
     </form>
-
-
     {% if success %}
-        <p style="color: green;">✅ File has been loaded</p>
+        <p class="success">✅ File has been loaded</p>
     {% elif error %}
-        <p style="color: red;">❌ Error: {{ error }}</p>
+        <p class="error">❌ Error: {{ error }}</p>
     {% endif %}
 </body>
 </html>
