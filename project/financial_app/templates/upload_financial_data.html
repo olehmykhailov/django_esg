@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Upload CSV - Financial Data</title>
+    <link rel="stylesheet" href="{% static 'financial_css/upload_common.css' %}">
+</head>
+<body>
+    <h2>Upload CSV for Financial Data</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="csv_file" accept=".csv" required>
+        {% if preview %}
+            <h4>Preview:</h4>
+            <div>{{ preview|safe }}</div>
+            <input type="hidden" name="confirm" value="1">
+            <button type="submit">Confirm and Upload</button>
+        {% else %}
+            <button type="submit">Preview</button>
+        {% endif %}
+    </form>
+    {% if success %}
+        <p class="success">✅ File uploaded successfully!</p>
+    {% elif error %}
+        <p class="error">❌ Error: {{ error }}</p>
+    {% endif %}
+</body>
+</html>

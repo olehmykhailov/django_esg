@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'etl_app',
-    'stocks_app'
+    'stocks_app',
+    'financial_app',
 ]
 
 MIDDLEWARE = [
