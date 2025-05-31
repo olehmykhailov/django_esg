@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path
 from etl_app import views as etl_views
 from stocks_app import views as stocks_views
+from financial_app import views as financial_views
 
 urlpatterns = [
     path('upload/greenhouse/', etl_views.upload_greenhouse, name='upload_greenhouse'),
@@ -24,5 +25,6 @@ urlpatterns = [
     path('upload/metadata/', etl_views.upload_metadata, name='upload_metadata'),
     path('upload/diversity/', etl_views.upload_diversity, name='upload_diversity'),
     path('upload/stocks/', stocks_views.upload_stocks, name='upload_stocks'),
+    path('upload/financial/', financial_views.upload_financial_data, name='upload_financial_data'),
 ]
 
