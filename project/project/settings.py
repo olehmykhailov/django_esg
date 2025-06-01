@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'etl_app',
     'stocks_app',
     'financial_app',
+    'visualisations_app',
 ]
 
 MIDDLEWARE = [

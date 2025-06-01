@@ -10,6 +10,7 @@
     <h2>Upload CSV for Metadata</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="text" name="category" value="{{ category|default_if_none:'' }}" required placeholder="ESG, financial, etc.">
         <input type="text" name="company" value="{{ company|default_if_none:'' }}" required placeholder="Company">
         <input type="file" name="csv_file" accept=".csv" required>
         {% if preview %}

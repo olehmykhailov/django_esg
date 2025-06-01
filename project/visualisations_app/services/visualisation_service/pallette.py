@@ -1,0 +1,20 @@
+dashboard_palette = {
+    "stock_price_line": "#00529B",
+    "background_main": "#FFFFFF",
+    "background_figure": "#F9FAFB",
+    "text_header": "#374151",
+    "text_body": "#6B7280",
+    "grid_faint": "#E5E7EB",
+    "scope1": "#FFABAB",
+    "scope2": "#FFDAAB",
+    "scope3": "#C1E1C1",
+    "pie_1": "#A7F3D0",
+    "pie_2": "#BAE6FD",
+    "pie_3": "#FBCFE8",
+    "pie_4": "#FDE68A",
+    "event_esg": "#34D399",
+    "event_product": "#A78BFA",
+    "event_financial": "#60A5FA",
+    "kpi_bg_1": "#E0F2FE",
+    "kpi_bg_2": "#D1FAE5"
+}

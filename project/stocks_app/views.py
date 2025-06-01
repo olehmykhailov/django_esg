@@ -88,6 +88,11 @@ def get_real_data(request):
         
         date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
         date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+
+        try:
+            run(ticker, date_from, date_to)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
         
         
         real_data = StocksData.objects.filter(
