@@ -1,50 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apple ESG Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #F9FAFB; color: #374151; margin: 20px; }
-    h2 { margin-top: 40px; color: #1F2937; }
-    img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .kpis { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
-    .kpis img { width: 160px; height: auto; }
-    .section { margin-bottom: 48px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Company Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 90%;
+            height: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            margin-top: 40px;
+        }
+        h2 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Apple ESG Dashboard</h1>
 
-  <div class="kpis">
-    <img src="data:image/png;base64,{{ kpi_ghg }}" alt="GHG KPI">
-    <img src="data:image/png;base64,{{ kpi_women }}" alt="Women KPI">
-  </div>
+<h1>📊 Company Dashboard</h1>
 
-  <div class="section">
-    <h2>Stock Price with Events</h2>
-    <img src="data:image/png;base64,{{ stock }}" alt="Stock Chart">
-  </div>
+<form method="get">
+    <label for="company">Company:</label>
+    <input type="text" name="company" id="company" value="{{ company }}" required>
 
-  <div class="section">
-    <h2>GHG Emissions by Scope</h2>
-    <img src="data:image/png;base64,{{ ghg }}" alt="GHG Chart">
-  </div>
+    <label for="ticker">Ticker:</label>
+    <input type="text" name="ticker" id="ticker" value="{{ ticker }}" required>
 
-  <div class="section">
-    <h2>Workforce Diversity</h2>
-    <img src="data:image/png;base64,{{ diversity }}" alt="Diversity Pie">
-  </div>
+    <label for="year">Year:</label>
+    <input type="number" name="year" id="year" value="{{ year }}" required>
 
-  <div class="section">
-    <h2>Total Corporate Energy</h2>
-    <img src="data:image/png;base64,{{ energy_total }}" alt="Energy Chart">
-  </div>
+    <button type="submit">Generate Dashboard</button>
+</form>
 
-  <div class="section">
-    <h2>Fuel Mix Breakdown</h2>
-    <img src="data:image/png;base64,{{ fuel_mix }}" alt="Fuel Mix Chart">
-  </div>
+{% if diversity_img %}
+<div class="chart-container">
+    <h2>Diversity Breakdown ({{ year }})</h2>
+    <img src="data:image/png;base64,{{ diversity_img }}" alt="Diversity Pie Chart">
+</div>
+{% endif %}
+
+{% if fin_chart_img %}
+<div class="chart-container">
+    <h2>Market Reaction to Financial Reports ({{ year }})</h2>
+    <img src="data:image/png;base64,{{ fin_chart_img }}" alt="Financial Market Reaction">
+</div>
+{% endif %}
+
+{% if esg_chart_img %}
+<div class="chart-container">
+    <h2>Market Reaction to Environmental Reports ({{ year }})</h2>
+    <img src="data:image/png;base64,{{ esg_chart_img }}" alt="Environmental Market Reaction">
+</div>
+{% endif %}
+
+{% if not diversity_img and not fin_chart_img and not esg_chart_img and company and ticker and year %}
+    <p><em>No data found for this company and year.</em></p>
+{% endif %}
 
 </body>
 </html>

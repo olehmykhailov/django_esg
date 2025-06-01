@@ -7,6 +7,7 @@ class Metadata(models.Model):
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=255)
     company = models.CharField(max_length=255)
+    ticker = models.CharField(max_length=10, blank=True, null=True)
     year = models.IntegerField()
     date_of_publication = models.DateField()
     source = models.CharField(max_length=255)

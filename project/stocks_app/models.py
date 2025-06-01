@@ -6,7 +6,6 @@ class StocksData(models.Model):
     """
     id = models.AutoField(primary_key=True)
     ticker = models.CharField(max_length=10)
-    company_name = models.CharField(max_length=255, null=True, blank=True)  # Company name
     date = models.DateField()
     open = models.FloatField()  # Open price
     high = models.FloatField()  # High price

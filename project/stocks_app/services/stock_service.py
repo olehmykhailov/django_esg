@@ -11,6 +11,8 @@ def get_stock_data(symbol: str, start_date_str: str, end_date_str: str):
     :param end_date_str: End date in 'YYYY-MM-DD' format.
     :return: Historical stok data as a DataFrame.
     """
+
+    symbol = symbol.upper()  # Ensure the symbol is in uppercase
     # Create a Ticker object
     ticker_obj = yf.Ticker(symbol)
     hist_data = ticker_obj.history( start=start_date_str,
@@ -55,7 +57,7 @@ def load_stock_data(df: pd.DataFrame, symbol: str):
     """
     from stocks_app.models import StocksData
     for index, row in df.iterrows():
-        print(row)
+
         StocksData.objects.create(
             ticker=symbol,
             date=row.name.date(),
@@ -71,11 +73,13 @@ def load_stock_data(df: pd.DataFrame, symbol: str):
 
 
 
-def run(symbol, start_date_str, end_date_str):
+def run(symbol: str, start_date_str, end_date_str):
     """
     Main function to run the stock data ETL process.
     """
-    print(f"Running ETL for stock data: {symbol} from {start_date_str} to {end_date_str}")
+
+    symbol = symbol.lower()
+    
     # Extract
     df = get_stock_data(symbol, start_date_str, end_date_str)
     
@@ -84,7 +88,6 @@ def run(symbol, start_date_str, end_date_str):
     
 
     # Load
+    print(symbol)
     load_stock_data(df_transformed, symbol)
-
-    print(f"✅ Stock data for {symbol} loaded successfully.")
 

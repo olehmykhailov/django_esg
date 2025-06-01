@@ -5,8 +5,9 @@ from etl_app.models import GreenhouseData, EnergyData, Metadata, DiversityData
 
 
 class BaseETL:
-    def __init__(self, company, file):
+    def __init__(self, company, file, ticker):
         self.company = company
+        self.ticker = ticker
         self.file = file
 
     def clean_key(self, key):
@@ -44,23 +45,37 @@ class BaseETL:
         print(f"✅ Завершено ETL для {type(self).__name__}")
 
 class MetadataETL(BaseETL):
+    def __init__(self, company, file, category, ticker):
+        super().__init__(company, file, ticker)
+        self.category = category
+
     def transform(self, data):
         for row in data:
-
-            row["year"] = datetime.strptime(row["year"], "%Y").year
-            row["value"] = row["value"].replace(",", ".")
-        
+            date_str = row.get('date_of_publication')
+            if date_str:
+                try:
+                    # Try parsing common date formats, fallback to original if fails
+                    parsed_date = datetime.strptime(date_str, "%Y-%m-%d")
+                except ValueError:
+                    try:
+                        parsed_date = datetime.strptime(date_str, "%d.%m.%Y")
+                    except ValueError:
+                        parsed_date = datetime.now()
+                row['date_of_publication'] = parsed_date.strftime("%Y-%m-%d")
+            else:
+                row['date_of_publication'] = datetime.now().strftime("%Y-%m-%d")
         return data
 
     def load(self, data):
         for row in data:
             Metadata.objects.create(
                 company=self.company,
-                category=row["category"],
-                subcategory=row["subcategory"],
-                metric=row["metric"],
+                ticker=self.ticker,
+                category=self.category,
                 year=int(row["year"]),
-                value=float(row["value"])
+                date_of_publication=row.get("date_of_publication", datetime.now().date()),
+                source=row.get("source", ""),
+                link=row.get("link", "")
             )
 
 class GreenhouseETL(BaseETL):
@@ -78,6 +93,7 @@ class GreenhouseETL(BaseETL):
         for row in data:
             GreenhouseData.objects.create(
                 company=self.company,
+                ticker=self.ticker,
                 category=row["category"],
                 subcategory=row["subcategory"],
                 metric=row["metric"],
@@ -95,6 +111,7 @@ class EnergyETL(BaseETL):
         for row in data:
             EnergyData.objects.create(
                 company=self.company,
+                ticker=self.ticker,
                 category=row["category"],
                 subcategory=row["subcategory"],
                 metric=row["metric"],
@@ -115,6 +132,7 @@ class DiversityETL(BaseETL):
         for row in data:
             DiversityData.objects.create(
                 company=self.company,
+                ticker=self.ticker,
                 year=int(row["year"]),
                 women_in_workforce=float(row.get("women_in_workforce", 0)),
                 black_employees=float(row.get("black_employees", 0)),
