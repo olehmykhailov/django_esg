@@ -1,19 +1,21 @@
-import re
 import csv
+import re
 from financial_app.models import FinancialData
 
-class BaseETL:
+
+class FinancialETL:
     def __init__(self, file):
         self.file = file
 
     def clean_key(self, key):
+        """Clean column names to match model fields"""
         key = key.strip().lower()
-        key = re.sub(r"\s*\(\s*%\s*\)", "", key)
         key = re.sub(r"[^\w]", "_", key)
         key = re.sub(r"_+", "_", key)
         return key.strip("_")
 
     def extract(self):
+        """Extract data from CSV file"""
         self.file.seek(0)
         decoded = self.file.read().decode('utf-8').splitlines()
         reader = csv.DictReader(decoded)
@@ -24,73 +26,48 @@ class BaseETL:
                 if v and v.strip()
             }
             data.append(new_row)
-        
         return data
 
     def transform(self, data):
+        """Transform data to match model requirements"""
+        for row in data:
+            # Clean numeric values
+            for key in ['fixed_costs', 'variable_costs', 'sales_revenue', 'gross_margin', 
+                       'operating_margin', 'operating_profit', 'net_profit', 'equity', 
+                       'liabilities', 'roa', 'roe', 'current_ratio', 'debt_ratio', 'asset_turnover']:
+                if key in row and row[key]:
+                    row[key] = row[key].replace(",", ".")
         return data
 
     def load(self, data):
-        raise NotImplementedError
+        """Load data into database"""
+        for row in data:
+            FinancialData.objects.create(
+                ticker=row.get('company', ''),
+                year=int(row.get('year', 0)),
+                fixed_costs=float(row.get('fixed_costs', 0)) if row.get('fixed_costs') else None,
+                variable_costs=float(row.get('variable_costs', 0)) if row.get('variable_costs') else None,
+                units_sold=int(row.get('units_sold', 0)) if row.get('units_sold') else None,
+                sales_revenue=float(row.get('sales_revenue', 0)) if row.get('sales_revenue') else None,
+                gross_margin=float(row.get('gross_margin', 0)) if row.get('gross_margin') else None,
+                operating_margin=float(row.get('operating_margin', 0)) if row.get('operating_margin') else None,
+                operating_profit=float(row.get('operating_profit', 0)) if row.get('operating_profit') else None,
+                net_profit=float(row.get('net_profit', 0)) if row.get('net_profit') else None,
+                equity=float(row.get('equity', 0)) if row.get('equity') else None,
+                liabilities=float(row.get('liabilities', 0)) if row.get('liabilities') else None,
+                roa=float(row.get('roa', 0)) if row.get('roa') else None,
+                roe=float(row.get('roe', 0)) if row.get('roe') else None,
+                current_ratio=float(row.get('current_ratio', 0)) if row.get('current_ratio') else None,
+                debt_ratio=float(row.get('debt_ratio', 0)) if row.get('debt_ratio') else None,
+                asset_turnover=float(row.get('asset_turnover', 0)) if row.get('asset_turnover') else None,
+            )
 
     def run(self):
-        raw = self.extract()
-        cleaned = self.transform(raw)
-        self.load(cleaned)
-        print(f"✅ Завершено ETL для {type(self).__name__}")
-
-class FinancialETL(BaseETL):
-    def transform(self, data):
-        for row in data:
-            for key, value in row.items():
-                print(f"🔍 Перевірка поля {key} {row[key]}")
-                
-                if value is None or value == "":
-                    print(f"❌ Пропущено поле {key} у рядка {row}")
-                    continue
-                
-                if isinstance(value, str) and "," in value:
-                    row[key] = value.replace(",", ".")
-        return data
-    @staticmethod
-    def to_float(val):
-        try:
-            return float(val)
-        except (TypeError, ValueError):
-            return None
-    @staticmethod
-    def to_int(val):
-        try:
-            return int(val)
-        except (TypeError, ValueError):
-            return None
-
-
-    def load(self, data):
-        for row in data:
-            try:
-                FinancialData.objects.create(
-                    ticker=row.get("ticker"),
-                    fixed_costs=self.to_float(row.get("fixed_costs")),
-                    variable_costs=self.to_float(row.get("variable_costs")),
-                    units_sold=self.to_int(row.get("units_sold")),
-                    sales_revenue=self.to_float(row.get("sales_revenue")),
-                    gross_margin=self.to_float(row.get("gross_margin")),
-                    operating_margin=self.to_float(row.get("operating_margin")),
-                    operating_profit=self.to_float(row.get("operating_profit")),
-                    net_profit=self.to_float(row.get("net_profit")),
-                    equity=self.to_float(row.get("equity")),
-                    liabilities=self.to_float(row.get("liabilities")),
-                    roa=self.to_float(row.get("roa")),
-                    roe=self.to_float(row.get("roe")),
-                    current_ratio=self.to_float(row.get("current_ratio")),
-                    debt_ratio=self.to_float(row.get("debt_ratio")),
-                    asset_turnover=self.to_float(row.get("asset_turnover")),
-                    year=self.to_int(row.get("year"))
-                )
-            except Exception as e:
-                print(f"❌ Помилка при завантаженні рядка {row}: {e}")
-                raise e
+        """Run the complete ETL process"""
+        raw_data = self.extract()
+        cleaned_data = self.transform(raw_data)
+        self.load(cleaned_data)
+        print("Financial data ETL completed successfully")
 
 
 

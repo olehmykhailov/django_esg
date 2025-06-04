@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: esg_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: esg_project
+      MYSQL_USER: esg_user
+      MYSQL_PASSWORD: esg_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql_init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  django:
+    build: .
+    container_name: esg_django
+    environment:
+      DB_HOST: mysql
+      DB_NAME: esg_project
+      DB_USER: esg_user
+      DB_PASSWORD: esg_password
+      DB_PORT: 3306
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./project:/app
+      - static_volume:/app/staticfiles
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+
+volumes:
+  mysql_data:
+  static_volume:

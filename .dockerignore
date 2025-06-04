@@ -1,0 +1,16 @@
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+README.md
+.env
+.DS_Store
+run.bat
+db.sqlite3
+mysql_data
+staticfiles
+docker-compose.yml

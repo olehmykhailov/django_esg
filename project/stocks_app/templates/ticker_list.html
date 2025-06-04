@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Tickers</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .refresh-btn { 
+            background: #28a745; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .refresh-btn:hover { background: #218838; }
+        .ticker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .ticker-card { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: #333; 
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .ticker-card:hover { 
+            border-color: #007bff; 
+            background: #e7f3ff; 
+        }
+        .stats { 
+            background: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Available Stock Tickers</h1>
+        <button class="refresh-btn" onclick="refreshAllCharts()">🔄 Refresh Charts</button>
+    </div>
+    
+    <div class="stats">
+        <strong>📊 Total Tickers: {{ tickers|length }}</strong> | 
+        <span id="last-refresh">Last refresh: {{ current_time|default:"Loading..." }}</span>
+    </div>
+    
+    <div class="ticker-grid">
+        {% for ticker in tickers %}
+            <a href="{% url 'stock_chart' ticker %}" class="ticker-card">
+                <strong>{{ ticker }}</strong>
+            </a>
+        {% endfor %}
+    </div>
+
+    <script>
+        function refreshAllCharts() {
+            const btn = document.querySelector('.refresh-btn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '⏳ Refreshing...';
+            btn.disabled = true;
+            
+            document.getElementById('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleString();
+            
+            setTimeout(() => {
+                btn.innerHTML = '✅ Refreshed!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 1000);
+            }, 1500);
+        }
+        
+        setInterval(() => {
+            const now = new Date().toLocaleString();
+            document.getElementById('last-refresh').textContent = 'Last refresh: ' + now;
+        }, 60000);
+    </script>
+</body>
+</html>

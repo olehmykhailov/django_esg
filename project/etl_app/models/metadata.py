@@ -6,11 +6,11 @@ class Metadata(models.Model):
     """
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=255)
+    subcategory = models.CharField(max_length=255, null=True, blank=True)
+    metric = models.CharField(max_length=255, null=True, blank=True)
     company = models.CharField(max_length=255)
     year = models.IntegerField()
-    date_of_publication = models.DateField()
-    source = models.CharField(max_length=255)
-    link = models.URLField()
+    value = models.FloatField(null=True, blank=True)
 
 
 

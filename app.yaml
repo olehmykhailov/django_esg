@@ -1,0 +1,17 @@
+runtime: python39
+
+env_variables:
+  DB_HOST: /cloudsql/YOUR_PROJECT_ID:europe-west1:INSTANCE_NAME
+  DB_NAME: esg_project
+  DB_USER: root
+  DB_PASSWORD: YOUR_DB_PASSWORD
+  GOOGLE_CLOUD_PROJECT: YOUR_PROJECT_ID
+  CLOUD_SQL_CONNECTION_NAME: YOUR_PROJECT_ID:europe-west1:INSTANCE_NAME
+
+beta_settings:
+  cloud_sql_instances: YOUR_PROJECT_ID:europe-west1:INSTANCE_NAME
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.6
